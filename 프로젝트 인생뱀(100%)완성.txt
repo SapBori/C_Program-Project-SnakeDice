@@ -1,0 +1,491 @@
+#include <stdio.h>
+#include <Windows.h>		///srand, SetColor,SetColorde 헤더
+#include <time.h>			///srand(time.h)
+#include <stdlib.h>
+#include <conio.h>
+#include<WinCon.h>
+
+
+
+#pragma warning(disable:4996)
+#define Red 0xc0		//색선언
+#define Blue 0x90
+#define Yellow 0xe0
+#define SkyBlue 0xb0
+#define Green 0xa0
+#define White 0xf0
+#define Black 0x0f
+
+#pragma warning (disable:4996)
+
+
+typedef struct _Player {
+	char pname[3];
+	int locate;
+	int catched;
+	int clear;
+	int p_color;
+}player;
+void Board(player *p, int plus); //////////////////	판 출력 함수
+void scoreBoard(player *p, int x);	//////////////점수판출력 함수
+void SetColor(player *p, int pa);	////////////////// 말의 위치 표시
+void SetColorde();		/////////////////	표준색지정
+void gotoxy(int x, int y);
+int main() {
+	FILE *F;
+	srand((unsigned)time(NULL));
+	player *p;
+	player c[101] = { { "p1",0,0,0,0 },{ "p2",0,0,0,0 },{ "p3",0,0,0,0 },{ "p4",0,0,0,0 },{ "p5",0,0,0,0 },{ "p6",0,0,0,0 },{ "p7",0,0,0,0 },{"p8",0,0,0,0},0, };
+	p = c;
+	int playerAll = 0;		/////////// 플레이어 수
+	int plus = 100;			///////////칸 수
+	int dice1 = 0;			//////////주사위 1
+	int dice2 = 0;			////////////주사위 2
+	int fall = 0, rise = 0;		///////떨어지고 ,올라가고 하는 변수
+	int dall = 0;		////////////////////주사위 합
+	int end = 0;		////////////////////게임종료변수
+	int next = 0;		////////////////////게임 순서진행 변수
+	int cur = 0;		////////////////////잡는데 도움주는 변수(이전플레이어 변수)
+	int colorS = 0;		////////색깔 고를때 사용하는 변수
+	char input[10];		///// 주사위 굴릴때 입력을 저장하는 변수
+	int persent1 = 0;		/////떨어지는 확률 변수
+	int persent2 = 0;		/////올라가는 확률 변수
+	int persent3 = 0;		/////위치 변경확률
+	int change = 0;			//////위치를 바꿀 플레이어를 랜덤으로 고르는 변수
+	printf("_________랜덤 인생 뱀 주사위 게임_________\n\n");
+	printf("총 몇분이세요?(최소2명 ,최대 8명추천드립니다.) \n");
+	scanf("%d", &playerAll);
+	printf("네!!총%d분 이시군요 이쪽으로 모시겠습니다 \n\n", playerAll);
+	int playerAll_1 = playerAll;
+	for (int a = 0;a < 50; a++) {
+		(p + a)->locate = 0;//초기화
+		(p + a)->clear = 0;//초기화
+	}
+	printf("플레이어 색을 정하실게요. 딱 이거다 싶은 색을 지정해주세요(번호로 입력해주세요)\n");
+	printf("1번 빨간색, 2번 파란색, 3번 초록색, 4번 노란색, 5번 흰색, 6번 하늘색, 7번 핑크 ,8번 짙은노랑 \n\n");
+	Sleep(500);
+	printf("꼭 이렇게 고르라 하면 8번 넘어가는거 고르시는 분있는데 \n저희 지점은 14번까지 있습니다. 있는 걸로 해주시길 추천드립니다. 어짜피 다른건 구현되어있지 않습니다.\n\n");
+	for (int u = 0; u < playerAll; u++) {
+		colorS = 0;
+		printf("p%d 선택 : ", u + 1);
+		scanf("%d", &colorS);
+		if (colorS == 1) {
+			(p + u)->p_color = Red;
+			printf("Red가 선택되었습니다.\n");
+		}
+		else if (colorS == 2) {
+			(p + u)->p_color = Blue;
+			printf("Blue가 선택되었습니다.\n");
+		}
+		else if (colorS == 3) {
+			(p + u)->p_color = Green;
+			printf("Green이 선택되었습니다.\n");
+		}
+		else if (colorS == 4) {
+			(p + u)->p_color = Yellow;
+			printf("Yellow가 선택되었습니다.\n");
+		}
+		else if (colorS == 5) {
+			(p + u)->p_color = White;
+			printf("White가 선택되었습니다.\n");
+		}
+		else if (colorS == 6) {
+			(p + u)->p_color = SkyBlue;
+			printf("SkyBlue가 선택되었습니다.\n");
+		}
+		else if (colorS == 7) {
+			(p + u)->p_color = 0xd0;
+			printf("Pink가 선택되었습니다.\n");
+		}
+		else if (colorS == 8) {
+			(p + u)->p_color = 0x80;
+			printf("???가 선택되었습니다.\n");
+		}
+		else if (colorS == 9) {
+			(p + u)->p_color = 0x70;
+			printf("????가 선택되었습니다.\n");
+		}
+		else if (colorS == 10) {
+			(p + u)->p_color = 0x60;
+			printf("?????가 선택되었습니다.\n");
+		}
+		else if (colorS == 11) {
+			(p + u)->p_color = 0x50;
+			printf("?????가 선택되었습니다.\n");
+		}
+		else if (colorS == 12) {
+			(p + u)->p_color = 0x40;
+			printf("?????가 선택되었습니다.\n");
+		}
+		else if (colorS == 13) {
+			(p + u)->p_color = 0x30;
+			printf("?????가 선택되었습니다.\n");
+		}
+		else if (colorS == 14) {
+			(p + u)->p_color = 0x20;
+			printf("?????가 선택되었습니다.\n");
+		}
+	}
+	printf("게임 시작합니다. 순서를 정하시면 아무키나 눌러주세요\n");
+	getch();
+	while (end == 0) {
+
+		if ((p + next)->clear == 0) {
+
+			printf(" %s 차례입니다. ", (p + next)->pname);
+			printf("d를 입력하면 주사위를 굴립니다.");
+			scanf(" %c", &input);
+			if (input[0] == 'd') {
+				(p + next)->catched = 0;
+
+				dice1 = (rand() % 6) + 1;	/////주사위1 랜덤수
+				dice2 = (rand() % 6) + 1;	/////주사위2 랜덤수
+				persent1 = (rand() % 5) + 1;	//////떨어지는 확률 20%
+				persent2 = (rand() % 4) + 1;	///////올라가는 확률 25%
+				persent3 = (rand() % 10 + 1);	///////위치 바뀌는 확률 10%
+				dall = dice1 + dice2;
+				printf("\n\n주사위를 보니 %d가 나왔어요. 100에 더 가까워졌네요.\n", dall);
+
+				Board(p, plus);	//////////////////// 말판 
+				printf("  말을 옮기시려면 아무키나 눌러주세요");
+				getch();
+				system("cls");	///////////////////화면 출력 지우기
+
+				(p + next)->locate += dall;
+				(p + next)->catched = 1;
+				cur = next - 1;
+				if (cur < 0) {
+					cur = playerAll;
+				}
+				else if (cur > playerAll) {
+					cur = 0;
+				}
+				if ((p + next)->locate == (p + cur)->locate && (p + next)->catched == (p + cur)->catched && (p + cur)->locate != 0) {
+					printf("어어어엇! ");
+					Sleep(1000);
+					printf("   %s가 %s를 잡았습니다.\n", (p + next)->pname, (p + cur)->pname);		////////잡기 기능
+					(p + cur)->locate = 0;
+					(p + cur)->catched = 0;
+				}
+				if (persent1 == 5) {		/////////////// 떨어지는 수 1~70까지 구분해서 출력
+					fall = (rand() % 70) + 1;
+					(p + next)->locate = (p + next)->locate - fall;
+					if ((p + next)->locate < 0) {
+						(p + next)->locate = 0;
+					}
+					if (fall > 60) {
+						printf("어어어엇! ");
+						Sleep(1000);
+						printf("아이구야~ 우리집 개가 옆집 아저씨 보증을 써줍니다.\n당신의 개는 무료로 보증을 써줍니다. 이제 당신은 가난 거렁뱅이입니다. %d까지 내려갑니다.\n", (p + next)->locate);
+					}
+					else if (fall < 60 && fall >50) {
+						printf("어어어엇! ");
+						Sleep(1000);
+						printf("으메~사놓았던 비트코인이 떡락했습니다. %d 까지 내려갑니다.\n", (p + next)->locate);
+					}
+					else if (fall < 50 && fall >40) {
+						printf("어어어엇! ");
+						Sleep(1000);
+						printf("저녁을 먹었습니다. 맛없는 저녁이었지만 돈은 내야 할겁니다.\n 전과가 두자리가 되긴 싫거든요 \n 그러니 경찰을 피해 도망갑니다 (%d만큼 추락)\n", (p + next)->locate);
+					}
+					else if (fall < 40 && fall > 30) {
+						printf("어어어엇! ");
+						Sleep(1000);
+						printf("앞에 자기장이 생겼습니다\n뒤로 도망칩니다.(%d로 이동)\n", (p + next)->locate);
+
+					}
+					else if (fall < 30 && fall >20)
+					{
+						printf("어어어엇! ");
+						Sleep(1000);
+						printf("가방은 영어로 백,숲의 나무는 빽빽 당신은 back(%d로 이동)\n", (p + next)->locate);
+
+					}
+					else if (fall < 20 && fall >10) {
+						printf("어어어엇! ");
+						Sleep(1000);
+						printf("펠레: 이 플레이어는 크게 나아갈 플레이어네(펠레의 저주로 %d로 이동했습니다.)\n", (p + next)->locate);
+
+					}
+					else {
+						printf("어어어엇! ");
+						Sleep(1000);
+						printf("100으로 부터 멀어집니다. (%d로 이동합니다)..당신의 앞날처럼.....\n", (p + next)->locate);
+
+					}
+				}
+				if (persent2 == 4) {		//////////// 올라가는 수 1~50까지 구분해서 출력
+					rise = (rand() % 50) + 1;
+					(p + next)->locate = (p + next)->locate + rise;
+					if (rise > 40) {
+						printf("어어어엇! ");
+						Sleep(1000);
+						printf("복.권.당.첨(3등). 당첨금을 가족 지인, 그 누구에게도 돈을 나눠주지 않습니다. %d까지 올라갑니다.\n", (p + next)->locate);
+
+					}
+					else if (rise < 40 && rise >30) {
+						printf("어어어엇! ");
+						Sleep(1000);
+						printf(" 친구의 사망보험금을 얻었습니다.(%d로 이동) 제가 급하게 돈이 필요했습니다.친구야 담생에 보자\n", (p + next)->locate);
+					}
+					else if (rise > 30 && rise < 20) {
+						printf("어어어엇! ");
+						Sleep(1000);
+						printf(" 급식의 돈을 %d만 만큼 뻈습니다. %d 까지 올라갑니다.\n", rise, (p + next)->locate);
+
+					}
+					else if (rise > 20 && rise < 10) {
+						printf("어어어엇! ");
+						Sleep(1000);
+						printf("친구가 저녁을 쏩니다(%d로 이동)\n", (p + next)->locate);
+
+					}
+					else {
+						printf("어어어엇! ");
+						Sleep(1000);
+						printf("돈을 주웠습니다.(%d로 이동합니다.)\n", (p + next)->locate);
+					}
+				}
+				if (persent3 == 1) {
+					change = (rand() % playerAll);		////////////// 위치 바꾸기
+					int t = 0;
+					t = (p + next)->locate;
+					(p + next)->locate = (p + change)->locate;
+					(p + change)->locate = t;
+					printf("어어어엇! ");
+					Sleep(1000);
+					printf("누군가의 힘으로 %s와 %s의 자리가 바뀌었습니다. 과연 행운일까,불행일까? \n", (p + next)->pname, (p + change)->pname);
+
+				}
+
+			}					///////////주사위 움직임
+			else if (input[0] == 'q') {
+				break;
+			}			////////강제종료
+			Board(p, 100);
+			scoreBoard(p, playerAll);
+			if ((p + next)->locate >= 100) {
+				(p + next)->clear = 1;
+				end = 1;
+				break;
+			}
+			next++;
+			input[0] = NULL;
+			if (next >= playerAll) {
+				next %= playerAll;
+			}
+
+			printf("순서를 넘기시려면 아무키나 눌러주세요"); ///////순서넘김
+			Sleep(1000);			
+			getch();
+			system("cls");
+		}
+
+	}
+	printf("~~game 종료~~\n");					/////순위 locate순으로 정렬하고 출력(bubble Sort)
+	for (int a = 0; a < playerAll; a++) {
+		for (int b = 0; b < playerAll_1 - 1;b++) {
+			if ((p + b)->locate < (p + b + 1)->locate) {
+				player tmp = { NULL,NULL,NULL };
+				tmp = *(p + b);
+				*(p + b) = *(p + b + 1);
+				*(p + b + 1) = tmp;
+			}
+		}
+		playerAll_1--;
+	}					///////////순위 표시
+
+	for (int x = 0; x < playerAll; x++) {
+		printf("%d위 : %s\n", x + 1, (p + x)->pname);
+		Sleep(1000);
+
+	}
+
+	return 0;
+}
+
+
+void scoreBoard(player *p, int x) {				/////////////스코어 보드 출력 함수
+	for (int a = 0; a < 1;a++) /*적을 칸 만들기*/ {
+		for (int b = 0; b < x * 12;b++) {
+			printf("-");
+		}
+		printf("\n");
+		for (int b = 0; b < x; b++)/*이름적는 칸*/ {
+			printf("|");
+			for (int c = 0;c < 4;c++) {
+				printf(" ");
+			}
+			SetColor(p, b);
+			printf("p%d", b + 1);
+			SetColorde();
+			for (int c = 0;c < 4;c++) {
+				printf(" ");
+			}
+			printf("|");
+		}
+		printf("\n");
+		for (int b = 0; b < x * 12;b++) {
+			printf("-");
+		}
+		printf("\n");
+	}
+	for (int a = 0; a < 1;a++) /*적을 칸 만들기*/ {
+		for (int b = 0; b < 12 * x;b++) {
+			printf("-");
+		}
+		printf("\n");
+		for (int b = 0; b < x;b++)/*locate*/ {
+			printf("|");
+			for (int c = 0;c < 4;c++) {
+				printf(" ");
+			}
+			if ((p + b)->locate <= 9) {
+				printf("%2d", (p + b)->locate);
+			}
+			else printf("%2d", (p + b)->locate);
+			for (int c = 0;c < 4;c++) {
+				printf(" ");
+			}
+			printf("|");
+		}
+		printf("\n");
+		for (int b = 0; b < 12 * x;b++) {
+			printf("-");
+		}
+		printf("\n");
+	}
+}
+void Board(player *p, int plu) {			////////////// 게임판 출력함수
+	int bo[10][10] = { 0, };				////100칸자리에 각각 수를 저장하는 배열 변수
+	printf("\n");
+	for (int a = 0; a <10;a++) {
+		for (int b = 0; b <10; b++) {
+
+			bo[a][b] = plu;	////(0,0)부터 100,99,98,97....
+
+			if (plu < 10) {	/////// 1~9이하일 때 칸이 깨지는 것을 막기 위해서 따로 프린트
+				if ((p + 0)->locate == plu) {		//////////p1의 위치에 색을 표현
+
+					SetColor(p, 0);
+					printf("|  %d  ", bo[a][b]);
+					SetColorde();
+
+				}
+				else if ((p + 1)->locate == plu) {	//////////p2의 위치에 색을 표현
+
+					SetColor(p, 1);
+					printf("|  %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else if ((p + 2)->locate == plu) {	//////////p3의 위치에 색을 표현
+
+					SetColor(p, 2);
+					printf("|  %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else if ((p + 3)->locate == plu) {	//////////p4의 위치에 색을 표현
+
+					SetColor(p, 3);
+					printf("|  %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else if ((p + 4)->locate == plu) {	//////////p5의 위치에 색을 표현
+
+					SetColor(p, 4);
+					printf("|  %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else if ((p + 5)->locate == plu) {	//////////p6의 위치에 색을 표현
+
+					SetColor(p, 5);
+					printf("|  %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else if ((p + 6)->locate == plu) {	//////////p7의 위치에 색을 표현
+					SetColor(p, 6);
+					printf("| %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else if ((p + 7)->locate == plu) {	//////////p8의 위치에 색을 표현
+					SetColor(p, 7);
+					printf("| %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else {				//////////플레이어 위치가 아닌 일반 판 색 표시
+					SetColorde();
+					printf("|  %d  ", bo[a][b]);
+				}
+
+			}
+			else {	///////10이상일 때 색 표현및 숫자 프린트
+				if ((p + 0)->locate == plu) {		//////////p1의 위치에 색을 표현
+					SetColor(p, 0);
+					printf("| %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else if ((p + 1)->locate == plu) {	//////////p2의 위치에 색을 표현
+					SetColor(p, 1);
+					printf("| %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else if ((p + 2)->locate == plu) {	//////////p3의 위치에 색을 표현
+					SetColor(p, 2);
+					printf("| %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else if ((p + 3)->locate == plu) {	//////////p4의 위치에 색을 표현
+					SetColor(p, 3);
+					printf("| %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else if ((p + 4)->locate == plu) {	//////////p5의 위치에 색을 표현
+					SetColor(p, 4);
+					printf("| %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else if ((p + 5)->locate == plu) {	//////////p6의 위치에 색을 표현
+					SetColor(p, 5);
+					printf("| %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else if ((p + 6)->locate == plu) {	//////////p7의 위치에 색을 표현
+					SetColor(p, 6);
+					printf("| %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else if ((p + 7)->locate == plu) {	//////////p8의 위치에 색을 표현
+					SetColor(p, 7);
+					printf("| %d  ", bo[a][b]);
+					SetColorde();
+				}
+				else {
+					SetColorde();
+					printf("| %d  ", bo[a][b]);
+				}
+			}
+			plu--;
+		}
+		printf("|");
+		printf("\n");
+		for (int p = 0; p < 4 * 15;p++) {
+			printf("-");
+		}
+		printf("\n");
+	}
+}
+void SetColor(player *p, int ne) {			//////////// 플레이어가 어디있는지 숫자 주변의 색을 플레이어 색으로 바꾸는 함수
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (p + ne)->p_color);
+}
+void SetColorde() {					//////////// 색 바꾸기가 끝났을때 원래의 콘솔 색으로 바꾸는 함수
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Black);
+}
+void gotoxy(int x, int y)
+
+ {
+    COORD pos = { x - 1,y - 1 };
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+ }	//////////////// 멘트 위치 출력 변경(미사용)
+
+
+
